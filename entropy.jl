@@ -74,7 +74,6 @@ function play(ans::Int64, a::Array{Float64}, r::Result, b::Basics)
         print("-----------Play $(b.moves)-----------------\n")
         print("Machine move - $(r.mach_ans)  | Machine score - $(r.score[MACH])\n")
         print("Man move - $(r.man_ans)      | Man score - $(r.score[MAN])\n")
-        print("Moves - $(b.moves)\n")
     end
 end
 
