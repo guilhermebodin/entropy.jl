@@ -109,5 +109,6 @@ function plot_results(result::Dict{String, Any})
     vline!([result["machine_wins"] result["machine_loses"]], color = ["blue" "red"])
 end
 
+
 res = test_machine(timeseries)
 plot_results(res)
