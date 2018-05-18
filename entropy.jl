@@ -1,12 +1,14 @@
-using CSV, DataFrames, Plots
+using CSV, DataFrames, Plots, Distributions
 plotlyjs()
 
+"""Estrutura de dados dos Resultados"""
 mutable struct Result
     score::Array{Int64}
     man_ans::Int64
     mach_ans::Int64
 end
 
+"""Estrutura de dados para a construção do método"""
 mutable struct Basics
     a::Array{Float64}
     p1::Int64
@@ -32,7 +34,7 @@ function evaluate!(result::Result)
     return nothing
 end
 
-"""Calcula a resposta da maquina"""
+"""Calcula a resposta da maquina por magia negra"""
 function move!(r::Result, b::Basics)
     if b.moves < 3
         r.mach_ans = 2
@@ -60,6 +62,7 @@ function initialize()
     return a, r, b
 end
 
+"""Coloca a resposta fo humano na estrutura Result"""
 function answer!(ans::Int64, result::Result)
     result.man_ans = ans
     return nothing
@@ -72,6 +75,7 @@ function play(ans::Int64, a::Array{Float64}, r::Result, b::Basics)
     evaluate!(r)
 end
 
+"""Aplica o método para a série de 1s e 0s inputada"""
 function test_machine(timeserie::Vector{Float64})
     len = length(timeserie)
     up_or_down = Array{Int64}(len - 1)
@@ -92,6 +96,10 @@ function test_machine(timeserie::Vector{Float64})
     return Dict("machine_wins" => machine_wins, "machine_loses" => machine_loses, "timeserie" => timeserie)
 end
 
+"""Plota os resultados: O histograma em azul representa a disperção do número de acertos da máquina
+   enquanto o vermelho representa a disperção do número de erros. A linha azul
+   representa o número de acertos para a timeserie testada e o a linha vermelha
+   o número de erros"""
 function plot_results(result::Dict{String, Any})
     len = length(result["timeserie"])
     machinescore = Array{Int64}(10000)
@@ -109,6 +117,21 @@ function plot_results(result::Dict{String, Any})
     vline!([result["machine_wins"] result["machine_loses"]], color = ["blue" "red"])
 end
 
+#Scripts
 
+#Esse script permite testar os número de acertos em uma serie "timeseries" desejada
+#A função test_machine ja transforma a série em 0's e 1's
+timeseries = ... #Definir timeseries
 res = test_machine(timeseries)
+plot_results(res)
+
+#Esse script permite testar em números aleatórios
+plays = 200 #Número de jogadas
+timeserie = Array{Int64}(plays)
+a, r, b = initialize()
+for i = 1:plays
+    timeserie[i] = rand(Bernoulli(0.5))
+    play(timeserie[i], a, r, b)
+end
+res = Dict("machine_wins" => r.score[MACH], "machine_loses" => r.score[MAN], "timeserie" => timeserie)
 plot_results(res)
